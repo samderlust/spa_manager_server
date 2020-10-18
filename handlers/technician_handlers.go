@@ -24,9 +24,9 @@ func (h technicianHandler) GetAll(c *fiber.Ctx) error {
 	technicians, err := technician.GetAll()
 	if err != nil {
 		return c.Status(err.Status).JSON(err)
-	} else {
-		return c.JSON(technicians)
 	}
+	return c.JSON(technicians)
+
 }
 
 func (h technicianHandler) GetOne(c *fiber.Ctx) error {

@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/samderlust/bookstore_utils-go/resterrors"
 	"github.com/samderlust/spa_manager/models"
 	"github.com/samderlust/spa_manager/utils/httputils"
 	"golang.org/x/crypto/bcrypt"
@@ -20,6 +20,7 @@ var AuthHandler authHandlerI = &authHandler{}
 type authHandler struct{}
 type authHandlerI interface {
 	SignUp(*fiber.Ctx) error
+	SignIn(*fiber.Ctx) error
 }
 
 func (h authHandler) SignUp(c *fiber.Ctx) error {
@@ -28,6 +29,7 @@ func (h authHandler) SignUp(c *fiber.Ctx) error {
 	if err := c.BodyParser(user); err != nil {
 		return httputils.JSONParamInvalidResponse(c, err)
 	}
+	user.Role = "admin"
 
 	if err := user.Validate(); err != nil {
 		return httputils.JSONResponseModelError(c, err)
@@ -43,7 +45,14 @@ func (h authHandler) SignUp(c *fiber.Ctx) error {
 	user.ID = *ID
 	user = user.Marshall()
 
-	return httputils.JSONCreatedResponse(c, user)
+	validToken, serr := _generateJWT(user)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(serr)
+	}
+
+	user.Token = validToken
+
+	return httputils.JSONSuccessResponse(c, user.Marshall())
 }
 
 func (h authHandler) SignIn(c *fiber.Ctx) error {
@@ -65,15 +74,13 @@ func (h authHandler) SignIn(c *fiber.Ctx) error {
 	if ok := _comparePasswords(user.Password, userLogin.Password); !ok {
 		return c.Status(http.StatusBadRequest).JSON(&fiber.Map{"message": "Invalid Email or Password"})
 	}
-	validToken, err := _generateJWT()
+	validToken, err := _generateJWT(user)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err)
 	}
+	user.Token = validToken
 
-	return httputils.JSONSuccessResponse(c, &fiber.Map{
-		"user":  user.Marshall(),
-		"token": validToken,
-	})
+	return httputils.JSONSuccessResponse(c, user.Marshall())
 }
 
 func _hashAndSalt(pwd []byte) string {
@@ -92,18 +99,18 @@ func _comparePasswords(hashedPwd string, plainPwd string) bool {
 	return true
 }
 
-func _generateJWT() (string, error) {
+func _generateJWT(user *models.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	claims["user"] = "samderlust"
+	claims["role"] = user.Role
+	claims["email"] = user.Email
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
-		fmt.Printf("something went wrong : %s \n", err.Error())
-		return "", err
+		return "", resterrors.NewInternalServerError("Something wrong...", err)
 	}
 	return tokenString, nil
 }

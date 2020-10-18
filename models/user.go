@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
@@ -20,6 +19,7 @@ type User struct {
 	Email    string             `json:"email,omitempty" bson:"email,omitempty"`
 	Password string             `json:"password,omitempty" bson:"password,omitempty"`
 	Role     string             `json:"role,omitempty" bson:"role,omitempty"`
+	Token    string             `json:"token,omitempty"`
 }
 
 func (u *User) Marshall() *User {
@@ -58,7 +58,7 @@ func (u User) Validate() *resterrors.RestError {
 		&u,
 		validation.Field(&u.Username, validation.Required, validation.NotNil, validation.Length(4, 18)),
 		validation.Field(&u.Email, validation.Required, is.Email),
-		validation.Field(&u.Password, validation.Required, validation.Match(regexp.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$`))),
+		validation.Field(&u.Password, validation.Required, validation.Length(4, 255)),
 		validation.Field(&u.Role, validation.Required, validation.In("admin", "technician")),
 	); err != nil {
 		return resterrors.NewBadRequestError(fmt.Sprintf("Invalid Info: %s", err.Error()))

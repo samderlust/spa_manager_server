@@ -26,7 +26,7 @@ func (s Service) GetAll() ([]Service, *resterrors.RestError) {
 		return nil, err
 	}
 
-	var list []Service
+	list := make([]Service, 0)
 	for cursor.Next(context.Background()) {
 		var service Service
 		if err := cursor.Decode(&service); err != nil {
@@ -54,7 +54,7 @@ func (s Service) Find(searchTerm string) ([]Service, *resterrors.RestError) {
 		return nil, err
 	}
 
-	var list []Service
+	list := make([]Service, 0)
 	for cursor.Next(context.Background()) {
 		var service Service
 		if err := cursor.Decode(&service); err != nil {

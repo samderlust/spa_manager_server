@@ -33,7 +33,7 @@ func (t *Technician) GetAll() ([]Technician, *resterrors.RestError) {
 		return nil, err
 	}
 
-	var list []Technician
+	list := make([]Technician, 0)
 
 	for cursor.Next(context.Background()) {
 		var technician Technician
@@ -68,7 +68,7 @@ func (t *Technician) Find(search string) ([]Technician, *resterrors.RestError) {
 	if err != nil {
 		return nil, err
 	}
-	var list []Technician
+	list := make([]Technician, 0)
 
 	for cursor.Next(context.Background()) {
 		var technician Technician

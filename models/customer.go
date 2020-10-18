@@ -32,7 +32,7 @@ func (c *Customer) GetAll() ([]Customer, *resterrors.RestError) {
 	if err != nil {
 		return nil, err
 	}
-	var list []Customer
+	list := make([]Customer, 0)
 	for cursor.Next(context.Background()) {
 		var customer Customer
 		if err := cursor.Decode(&customer); err != nil {
@@ -98,7 +98,7 @@ func (c *Customer) Find(search string) ([]Customer, *resterrors.RestError) {
 	if err != nil {
 		return nil, err
 	}
-	var list []Customer
+	list := make([]Customer, 0)
 
 	for cursor.Next(context.Background()) {
 		var customer Customer

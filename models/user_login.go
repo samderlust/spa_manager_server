@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
@@ -18,7 +17,7 @@ func (u UserLogin) Validate() *resterrors.RestError {
 	if err := validation.ValidateStruct(
 		&u,
 		validation.Field(&u.Email, validation.Required, is.Email),
-		validation.Field(&u.Password, validation.Required, validation.Match(regexp.MustCompile(`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$`))),
+		validation.Field(&u.Password, validation.Required, validation.Length(4, 255)),
 	); err != nil {
 		return resterrors.NewBadRequestError(fmt.Sprintf("Invalid Info: %s", err.Error()))
 	}
