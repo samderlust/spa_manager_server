@@ -9,7 +9,7 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 	return jwtware.New(jwtware.Config{
 		SigningKey: []byte("klsajflkdasdsfdsfsdjf"),
 		ErrorHandler: func(c *fiber.Ctx, e error) error {
-			return c.SendString("Unauthorized")
+			return c.Status(401).JSON(&fiber.Map{"message": "Unauthorized"})
 		},
 	})
 }

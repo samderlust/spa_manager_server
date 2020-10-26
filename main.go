@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/samderlust/spa_manager/middlewares"
 	"github.com/samderlust/spa_manager/routers"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	app := fiber.New()
-
+	app.Use(cors.New())
 	apiGroup := app.Group("api/v1")
 	app.Use(logger.New())
 	routers.AuthRouter(apiGroup)
@@ -20,6 +21,8 @@ func main() {
 	routers.TechnicianRouter(apiGroup)
 	routers.CustomerRouter(apiGroup)
 	routers.ServiceRouter(apiGroup)
+	routers.GeneralRouter(apiGroup)
+
 	app.Listen(":8080")
 
 }
