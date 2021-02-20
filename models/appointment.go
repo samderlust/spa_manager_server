@@ -68,7 +68,7 @@ func (a *Appointment) Find(search string) ([]Appointment, *resterrors.RestError)
 	if err != nil {
 		return nil, err
 	}
-	var list []Appointment
+	list := make([]Appointment, 0)
 
 	for cursor.Next(context.Background()) {
 		var appointment Appointment
@@ -87,7 +87,7 @@ func (a *Appointment) GetAll() ([]Appointment, *resterrors.RestError) {
 	if err != nil {
 		return nil, err
 	}
-	var list []Appointment
+	list := make([]Appointment, 0)
 	for cursor.Next(context.Background()) {
 		var appointment Appointment
 		if err := cursor.Decode(&appointment); err != nil {

@@ -23,6 +23,7 @@ type bookingCoreInterface interface {
 	AppointmentCollection() *mongo.Collection
 	ServiceCollection() *mongo.Collection
 	UserCollection() *mongo.Collection
+	CategoryCollection() *mongo.Collection
 }
 
 type bookingCoreClient struct{}
@@ -41,6 +42,21 @@ func (b *bookingCoreClient) UserCollection() *mongo.Collection {
 	c := client.Database("booking_core").Collection("users")
 	index := mongo.IndexModel{
 		Keys:    bson.M{"email": 1},
+		Options: options.Index().SetUnique(true),
+	}
+	if _, err := c.Indexes().CreateOne(
+		context.Background(),
+		index,
+	); err != nil {
+		log.Fatal("failed create Index")
+	}
+	return c
+}
+
+func (b *bookingCoreClient) CategoryCollection() *mongo.Collection {
+	c := client.Database("booking_core").Collection("categories")
+	index := mongo.IndexModel{
+		Keys:    bson.M{"name": 1},
 		Options: options.Index().SetUnique(true),
 	}
 	if _, err := c.Indexes().CreateOne(
