@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -23,6 +25,6 @@ func main() {
 	routers.ServiceRouter(apiGroup)
 	routers.GeneralRouter(apiGroup)
 
-	app.Listen(":8080")
+	app.Listen(":" + os.Getenv("PORT"))
 
 }

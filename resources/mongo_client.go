@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/samderlust/spa_manager/utils/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
@@ -32,8 +33,10 @@ func init() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	var err error
-	client, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	uri := "mongodb+srv://samderlust:P%40ssword1@cluster0.l4grx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
+		logger.Info(err.Error())
 		panic(err)
 	}
 }
