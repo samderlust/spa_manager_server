@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	print("start main")
 	app := fiber.New()
 	app.Use(cors.New())
 	apiGroup := app.Group("api/v1")
@@ -25,6 +26,11 @@ func main() {
 	routers.ServiceRouter(apiGroup)
 	routers.GeneralRouter(apiGroup)
 
-	app.Listen(":" + os.Getenv("PORT"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default port if not specified
+	}
+
+	app.Listen(":" + port)
 
 }

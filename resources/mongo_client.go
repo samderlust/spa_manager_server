@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"github.com/samderlust/spa_manager/utils/logger"
@@ -33,7 +34,7 @@ func init() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	var err error
-	uri := "mongodb+srv://samderlust:P%40ssword1@cluster0.l4grx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+	uri := os.Getenv("DB_URL")
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		logger.Info(err.Error())
