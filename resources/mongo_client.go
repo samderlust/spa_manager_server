@@ -26,6 +26,7 @@ type bookingCoreInterface interface {
 	ServiceCollection() *mongo.Collection
 	UserCollection() *mongo.Collection
 	CategoryCollection() *mongo.Collection
+	StoreCollection() *mongo.Collection
 }
 
 type bookingCoreClient struct{}
@@ -91,6 +92,11 @@ func (b *bookingCoreClient) TechnicianCollection() *mongo.Collection {
 //AvailabilityCollection get availabilities collection
 func (b *bookingCoreClient) AvailabilityCollection() *mongo.Collection {
 	return client.Database("booking_core").Collection("availabilities")
+}
+
+//StoreCollection get availabilities collection
+func (b *bookingCoreClient) StoreCollection() *mongo.Collection {
+	return client.Database("booking_core").Collection("stores")
 }
 
 //CustomerCollection get customers collection

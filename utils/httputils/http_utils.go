@@ -22,7 +22,7 @@ func JSONCreatedResponse(c *fiber.Ctx, res interface{}) error {
 	return c.Status(http.StatusCreated).JSON(res)
 }
 
-//JSONSuccessResponse shortcut to restponse to successful request
+//JSONSuccessResponse shortcut to response to successful request
 func JSONSuccessResponse(c *fiber.Ctx, res interface{}) error {
 	return c.Status(http.StatusOK).JSON(res)
 }

@@ -33,11 +33,7 @@ func (u *User) Save() (*primitive.ObjectID, *resterrors.RestError) {
 
 func (u *User) Update() *resterrors.RestError {
 	filter := bson.M{"_id": u.ID}
-	updating := bson.M{
-		"username": u.Username,
-		"email":    u.Email,
-		"password": u.Password,
-	}
+	updating := bson.M{"$set": bson.M{"username": u.Username, "email": u.Email, "password": u.Password}}
 	return updateEntity(&u, filter, updating, userCollection)
 }
 

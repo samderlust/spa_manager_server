@@ -21,6 +21,12 @@ type authHandler struct{}
 type authHandlerI interface {
 	SignUp(*fiber.Ctx) error
 	SignIn(*fiber.Ctx) error
+	ChangePassword(*fiber.Ctx) error
+}
+
+type UserChangePassword struct {
+	models.UserLogin
+	NewPassword string `json:"newPassword, omitempty"`
 }
 
 func (h authHandler) SignUp(c *fiber.Ctx) error {
@@ -81,6 +87,35 @@ func (h authHandler) SignIn(c *fiber.Ctx) error {
 	user.Token = validToken
 
 	return httputils.JSONSuccessResponse(c, user.Marshall())
+}
+
+func (h authHandler) ChangePassword(c *fiber.Ctx) error {
+	userChangePassword := new(UserChangePassword)
+
+	if err := c.BodyParser(userChangePassword); err != nil {
+		return httputils.JSONParamInvalidResponse(c, err)
+	}
+	currentUser := new(models.User)
+	if err := currentUser.FindByEmail(userChangePassword.Email); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(&fiber.Map{"message": "Invalid Email or Password"})
+	}
+
+	if ok := _comparePasswords(currentUser.Password, userChangePassword.Password); !ok {
+		return c.Status(http.StatusBadRequest).JSON(&fiber.Map{"message": "Invalid Email or Password"})
+	}
+	hashedPwd := _hashAndSalt([]byte(userChangePassword.NewPassword))
+	currentUser.Password = hashedPwd
+
+	if err := currentUser.Update(); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err)
+	}
+	validToken, err := _generateJWT(currentUser)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err)
+	}
+	currentUser.Token = validToken
+
+	return httputils.JSONSuccessResponse(c, currentUser.Marshall())
 }
 
 func _hashAndSalt(pwd []byte) string {

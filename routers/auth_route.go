@@ -10,4 +10,5 @@ func AuthRouter(api fiber.Router) {
 
 	authGroup.Post("/signup", handlers.AuthHandler.SignUp)
 	authGroup.Post("/signin", handlers.AuthHandler.SignIn)
+	authGroup.Post("/changepassword", handlers.AuthHandler.ChangePassword)
 }
