@@ -39,6 +39,7 @@ func getEntity(entity interface{}, filter map[string]interface{}, collection *mo
 	res := collection.FindOne(ctx, filter)
 
 	if err := res.Decode(entity); err != nil {
+		logger.Error("Error geting entity", err)
 		return resterrors.NewInternalServerError("Error getting entity")
 	}
 

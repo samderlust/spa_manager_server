@@ -8,17 +8,12 @@ require (
 	github.com/aws/aws-sdk-go v1.37.11 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
-	github.com/gofiber/fiber v1.14.6
 	github.com/gofiber/fiber/v2 v2.1.0
 	github.com/gofiber/jwt/v2 v2.1.0
-	github.com/gofiber/utils v0.1.2 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/gorilla/schema v1.2.0 // indirect
-	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/samderlust/bookstore_utils-go v0.0.0-20200625113721-f0b3d4416e20
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tidwall/pretty v1.0.5 // indirect

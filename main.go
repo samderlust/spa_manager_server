@@ -22,6 +22,7 @@ func main() {
 
 	routers.PingRoutes(apiGroup)
 	routers.TechnicianRouter(apiGroup)
+	routers.StoreRouter(apiGroup)
 	routers.CustomerRouter(apiGroup)
 	routers.ServiceRouter(apiGroup)
 	routers.GeneralRouter(apiGroup)

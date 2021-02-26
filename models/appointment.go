@@ -14,7 +14,7 @@ import (
 
 type Appointment struct {
 	ID            primitive.ObjectID   `json:"id,omitempty" bson:"_id,omitempty"`
-	TechinicianID primitive.ObjectID   `json:"technicianID,omitempty" bson:"technicianID,omitempty"`
+	TechinicianID primitive.ObjectID   `json:"technicianId,omitempty" bson:"technicianId,omitempty"`
 	CustomerID    primitive.ObjectID   `json:"customerId,omitempty" bson:"customerId,omitempty"`
 	Time          time.Time            `json:"time,omitempty" bson:"time,omitempty"`
 	Services      []primitive.ObjectID `json:"services,omitempty" bson:"services,omitempty"`
@@ -38,7 +38,7 @@ func (a *Appointment) Update() *resterrors.RestError {
 
 	updating := bson.M{
 		"$set": bson.M{
-			"technicianID": a.TechinicianID,
+			"technicianId": a.TechinicianID,
 			"customerId":   a.CustomerID,
 			"time":         a.Time,
 			"services":     a.Services,
@@ -56,7 +56,7 @@ func (a *Appointment) Find(search string) ([]Appointment, *resterrors.RestError)
 	filter := bson.M{
 		"$or": []interface{}{
 			bson.M{
-				"technicianID": getIgnoreCaseSearch(search),
+				"technicianId": getIgnoreCaseSearch(search),
 				"customerId":   getIgnoreCaseSearch(search),
 				"time":         getIgnoreCaseSearch(search),
 				"services":     getIgnoreCaseSearch(search),

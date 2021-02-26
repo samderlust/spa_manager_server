@@ -15,6 +15,7 @@ import (
 
 var mySigningKey = []byte("klsajflkdasdsfdsfsdjf")
 
+// AuthHandler export AuthHandler
 var AuthHandler authHandlerI = &authHandler{}
 
 type authHandler struct{}
@@ -24,9 +25,10 @@ type authHandlerI interface {
 	ChangePassword(*fiber.Ctx) error
 }
 
+//UserChangePassword type of user that want to change password
 type UserChangePassword struct {
 	models.UserLogin
-	NewPassword string `json:"newPassword, omitempty"`
+	NewPassword string `json:"newPassword,omitempty" bson:"newPassword,omitempty"`
 }
 
 func (h authHandler) SignUp(c *fiber.Ctx) error {

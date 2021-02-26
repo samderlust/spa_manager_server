@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/samderlust/spa_manager/resources"
+	"github.com/samderlust/spa_manager/utils/logger"
 	"github.com/samderlust/spa_manager/utils/resterrors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
@@ -22,6 +23,7 @@ var (
 )
 
 func (s Service) GetAll() ([]Service, *resterrors.RestError) {
+	logger.Info("get all serviec")
 	filter := bson.M{}
 	cursor, err := getMultipleEntities(filter, serviceCollection)
 	if err != nil {

@@ -8,6 +8,5 @@ import (
 //GeneralRouter setup router for general routes
 func GeneralRouter(api fiber.Router) {
 	genGroup := api.Group("/overview")
-
 	genGroup.Get("/", handlers.GeneralHandler.GetGeneralInfo)
 }

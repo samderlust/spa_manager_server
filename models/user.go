@@ -13,6 +13,7 @@ import (
 
 var userCollection = resources.Client.UserCollection()
 
+//User define user model
 type User struct {
 	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Username string             `json:"username,omitempty" bson:"username,omitempty"`
@@ -22,6 +23,7 @@ type User struct {
 	Token    string             `json:"token,omitempty"`
 }
 
+//Marshall filter sensitive info
 func (u *User) Marshall() *User {
 	u.Password = ""
 	return u
@@ -42,6 +44,12 @@ func (u *User) Delete() *resterrors.RestError {
 	return deleteEntity(&u, filter, userCollection)
 }
 
+func (u *User) FindByID() *resterrors.RestError {
+	filter := bson.M{
+		"_id": u.ID,
+	}
+	return getEntity(&u, filter, userCollection)
+}
 func (u *User) FindByEmail(email string) *resterrors.RestError {
 	filter := bson.M{
 		"email": email,
@@ -55,7 +63,7 @@ func (u User) Validate() *resterrors.RestError {
 		validation.Field(&u.Username, validation.Required, validation.NotNil, validation.Length(4, 18)),
 		validation.Field(&u.Email, validation.Required, is.Email),
 		validation.Field(&u.Password, validation.Required, validation.Length(4, 255)),
-		validation.Field(&u.Role, validation.Required, validation.In("admin", "technician")),
+		validation.Field(&u.Role, validation.Required, validation.In("admin", "owner", "technician")),
 	); err != nil {
 		return resterrors.NewBadRequestError(fmt.Sprintf("Invalid Info: %s", err.Error()))
 	}

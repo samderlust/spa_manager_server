@@ -32,8 +32,8 @@ type bookingCoreInterface interface {
 type bookingCoreClient struct{}
 
 func init() {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	var err error
 	uri := os.Getenv("DB_URL")
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))

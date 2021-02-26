@@ -10,7 +10,7 @@ import (
 
 type Availability struct {
 	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	TechnicianID primitive.ObjectID `json:"technician,omimpty" bson:"technician,omitempty"`
+	TechnicianID primitive.ObjectID `json:"technician,omitempty" bson:"technician,omitempty"`
 	Date         time.Time          `json:"date,omitempty" bson:"date,omitempty"`
 	StartTime    time.Time          `json:"startTime,omitempty" bson:"startTime,omitempty"`
 	EndTime      time.Time          `json:"endTime,omitempty" bson:"endTime,omitempty"`
