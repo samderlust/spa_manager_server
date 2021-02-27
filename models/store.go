@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/samderlust/spa_manager/resources"
@@ -13,21 +12,22 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Store struct
 type Store struct {
-	ID           primitive.ObjectID   `json:"id,omitempty" bson:"_id,omitempty"`
-	Name         string               `json:"name,omitempty" bson:"name,omitempty"`
-	Address      string               `json:"address,omitempty" bson:"address,omitempty"`
-	Phone        int                  `json:"phone,omitempty" bson:"phone,omitempty"`
-	Owner        primitive.ObjectID   `json:"owner,omitempty" bson:"owner,omitempty"`
-	Appointments []primitive.ObjectID `json:"appointments,omitempty" bson:"appointments,omitempty"`
-	Employees    []primitive.ObjectID `json:"employees,omitempty" bson:"employees,omitempty"`
+	ID        primitive.ObjectID   `json:"id,omitempty" bson:"_id,omitempty"`
+	Name      string               `json:"name,omitempty" bson:"name,omitempty"`
+	Address   string               `json:"address,omitempty" bson:"address,omitempty"`
+	Phone     int                  `json:"phone,omitempty" bson:"phone,omitempty"`
+	Owner     primitive.ObjectID   `json:"owner,omitempty" bson:"owner,omitempty"`
+	Employees []primitive.ObjectID `json:"employees,omitempty" bson:"employees,omitempty"`
 }
 
+// PopulatedStore is used to populated owner and employees
 type PopulatedStore struct {
 	Store
 	Owner        User          `json:"owner,omitempty" bson:"owner,omitempty"`
-	Appointments []Appointment `json:"appointments," bson:"appointments,"`
 	Employees    []User        `json:"employees," bson:"employees,"`
+	Appointments []Appointment `json:"appointments,omitempty" bson:"appointments,omitempty"`
 }
 
 type address struct {
@@ -37,6 +37,7 @@ var (
 	storeCollection = resources.Client.StoreCollection()
 )
 
+// Puplate the store
 func (s *Store) Puplate() *PopulatedStore {
 	pStore := new(PopulatedStore)
 	pStore.ID = s.ID
@@ -52,20 +53,6 @@ func (s *Store) Puplate() *PopulatedStore {
 	}
 	pStore.Owner = *owner.Marshall()
 
-	appList := make([]Appointment, 0)
-	for _, a := range s.Appointments {
-		var appointment Appointment
-		appointment.ID = a
-
-		if err := appointment.GetByID(); err != nil {
-
-			logger.Info(err.Message)
-			// return nil
-		}
-		appList = append(appList, appointment)
-	}
-	pStore.Appointments = appList
-
 	eList := make([]User, 0)
 	for _, e := range s.Employees {
 		var emp User
@@ -77,13 +64,13 @@ func (s *Store) Puplate() *PopulatedStore {
 		}
 		eList = append(eList, emp)
 	}
-	logger.Info("app")
-	logger.Info(strconv.Itoa(len(pStore.Appointments)))
+
 	pStore.Employees = eList
 
 	return pStore
 }
 
+// GetAll stores
 func (s Store) GetAll() ([]Store, *resterrors.RestError) {
 	filter := bson.M{}
 	cursor, err := getMultipleEntities(filter, storeCollection)
@@ -102,15 +89,24 @@ func (s Store) GetAll() ([]Store, *resterrors.RestError) {
 	return list, nil
 }
 
+// Save store
 func (s *Store) Save() (*primitive.ObjectID, *resterrors.RestError) {
 	return saveEntity(&s, storeCollection)
 }
 
-func (s *Store) GetById() *resterrors.RestError {
+// GetByID Store
+func (s *Store) GetByID() *resterrors.RestError {
 	filter := bson.M{"id": s.ID}
 	return getEntity(&s, filter, storeCollection)
 }
 
+// FindByOwnerID get store by owner Id
+func (s *Store) FindByOwnerID() *resterrors.RestError {
+	filter := bson.M{"owner": s.Owner}
+	return getEntity(&s, filter, storeCollection)
+}
+
+// Find store
 func (s Store) Find(searchTerm string) ([]Store, *resterrors.RestError) {
 	filter := bson.M{"name": getIgnoreCaseSearch(searchTerm)}
 
@@ -132,23 +128,24 @@ func (s Store) Find(searchTerm string) ([]Store, *resterrors.RestError) {
 
 }
 
+// Update store
 func (s *Store) Update() *resterrors.RestError {
 	filter := bson.M{"_id": s.ID}
 
 	updating := bson.M{
 		"$set": bson.M{
-			"name":         s.Name,
-			"address":      s.Address,
-			"phone":        s.Phone,
-			"owner":        s.Owner,
-			"appointments": s.Appointments,
-			"employees":    s.Employees,
+			"name":      s.Name,
+			"address":   s.Address,
+			"phone":     s.Phone,
+			"owner":     s.Owner,
+			"employees": s.Employees,
 		},
 	}
 	return updateEntity(&s, filter, updating, storeCollection)
 
 }
 
+// Validate store
 func (s Store) Validate() *resterrors.RestError {
 	if err := validation.ValidateStruct(
 		&s,

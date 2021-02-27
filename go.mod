@@ -7,6 +7,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
 	github.com/aws/aws-sdk-go v1.37.11 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/gofiber/fiber/v2 v2.1.0
 	github.com/gofiber/jwt/v2 v2.1.0

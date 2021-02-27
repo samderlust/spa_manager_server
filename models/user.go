@@ -50,6 +50,7 @@ func (u *User) FindByID() *resterrors.RestError {
 	}
 	return getEntity(&u, filter, userCollection)
 }
+
 func (u *User) FindByEmail(email string) *resterrors.RestError {
 	filter := bson.M{
 		"email": email,

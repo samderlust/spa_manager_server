@@ -6,7 +6,7 @@ import (
 )
 
 func CustomerRouter(api fiber.Router) {
-	cusGroup := api.Group("/customer")
+	cusGroup := api.Group("/customers")
 
 	cusGroup.Get("/", handlers.CustomerHandler.GetAll)
 	cusGroup.Post("/", handlers.CustomerHandler.Create)

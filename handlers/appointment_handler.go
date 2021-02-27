@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/samderlust/spa_manager/models"
 	"github.com/samderlust/spa_manager/utils/httputils"
+	"github.com/samderlust/spa_manager/utils/logger"
 )
 
 //AppointmentHandler handlers for appointmenr routes
@@ -32,11 +35,12 @@ func (h appointmentHander) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(appointment); err != nil {
 		return httputils.JSONParamInvalidResponse(c, err)
 	}
+	appointment.Time = time.Now()
 
+	logger.Info(time.Now().String())
 	ID, err := appointment.Save()
 	if err != nil {
 		return httputils.JSONResponseModelError(c, err)
-
 	}
 
 	appointment.ID = *ID

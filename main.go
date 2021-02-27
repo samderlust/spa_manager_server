@@ -26,6 +26,7 @@ func main() {
 	routers.CustomerRouter(apiGroup)
 	routers.ServiceRouter(apiGroup)
 	routers.GeneralRouter(apiGroup)
+	routers.AppointmentRouter(apiGroup)
 
 	port := os.Getenv("PORT")
 	if port == "" {
