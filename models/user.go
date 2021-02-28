@@ -15,12 +15,15 @@ var userCollection = resources.Client.UserCollection()
 
 //User define user model
 type User struct {
-	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Username string             `json:"username,omitempty" bson:"username,omitempty"`
-	Email    string             `json:"email,omitempty" bson:"email,omitempty"`
-	Password string             `json:"password,omitempty" bson:"password,omitempty"`
-	Role     string             `json:"role,omitempty" bson:"role,omitempty"`
-	Token    string             `json:"token,omitempty"`
+	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username    string             `json:"username,omitempty" bson:"username,omitempty"`
+	FirstName   string             `json:"firstName,omitempty" bson:"firstName,omitempty"`
+	LastName    string             `json:"lastName,omitempty" bson:"lastName,omitempty"`
+	Email       string             `json:"email,omitempty" bson:"email,omitempty"`
+	Password    string             `json:"password,omitempty" bson:"password,omitempty"`
+	Role        string             `json:"role,omitempty" bson:"role,omitempty"`
+	PhoneNumber string             `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty"`
+	Token       string             `json:"token,omitempty"`
 }
 
 //Marshall filter sensitive info
@@ -64,7 +67,7 @@ func (u User) Validate() *resterrors.RestError {
 		validation.Field(&u.Username, validation.Required, validation.NotNil, validation.Length(4, 18)),
 		validation.Field(&u.Email, validation.Required, is.Email),
 		validation.Field(&u.Password, validation.Required, validation.Length(4, 255)),
-		validation.Field(&u.Role, validation.Required, validation.In("admin", "owner", "technician")),
+		validation.Field(&u.Role, validation.Required, validation.In("admin", "owner", "technician").Error("role must be 'admin', 'owner', or 'technician'")),
 	); err != nil {
 		return resterrors.NewBadRequestError(fmt.Sprintf("Invalid Info: %s", err.Error()))
 	}

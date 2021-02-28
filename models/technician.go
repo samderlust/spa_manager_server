@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"fmt"
-	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/samderlust/spa_manager/resources"
@@ -13,13 +12,9 @@ import (
 )
 
 type Technician struct {
-	ID          primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	FirstName   string             `json:"firstName,omitempty" bson:"firstName,omitempty"`
-	LastName    string             `json:"lastName,omitempty" bson:"lastName,omitempty"`
-	PhoneNumber string             `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty"`
-	Email       string             `json:"email,omitempty" bson:"email,omitempty"`
-	// Availabilities []bson.ObjectID `json:"availabilities,omitempty" bson:"availabilities,omitempty"`
-	// Bookings       []bson.ObjectID `json:"bookings,omitempty" bson:"bookings,omitempty"`
+	ID             primitive.ObjectID   `json:"id,omitempty" bson:"_id,omitempty"`
+	Services       []primitive.ObjectID `json:"services,omitempty" bson:"services,omitempty"`
+	Availabilities []primitive.ObjectID `json:"availabilities,omitempty" bson:"availabilities,omitempty"`
 }
 
 var (
@@ -86,12 +81,7 @@ func (t *Technician) Update() *resterrors.RestError {
 		&t,
 		bson.M{"_id": t.ID},
 		bson.M{
-			"$set": bson.M{
-				"firstName":   t.FirstName,
-				"lastName":    t.LastName,
-				"phoneNumber": t.PhoneNumber,
-				"email":       t.Email,
-			}},
+			"$set": bson.M{}},
 		techCollection,
 	)
 }
@@ -104,10 +94,6 @@ func (t *Technician) Delete() *resterrors.RestError {
 func (t Technician) Validate() *resterrors.RestError {
 	if err := validation.ValidateStruct(
 		&t,
-		validation.Field(&t.FirstName, validation.Required, validation.NotNil, validation.Length(1, 10)),
-		validation.Field(&t.LastName, validation.Required, validation.Length(1, 10)),
-		validation.Field(&t.PhoneNumber, validation.Required, validation.NotNil, validation.Match(regexp.MustCompile(`^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$`))),
-		validation.Field(&t.Email, validation.Match(regexp.MustCompile(`^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$`))),
 	); err != nil {
 		return resterrors.NewBadRequestError(fmt.Sprintf("Invalid attribute %s!", err.Error()))
 	}

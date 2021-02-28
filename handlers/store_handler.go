@@ -21,6 +21,8 @@ type storeHandlerI interface {
 	SetOwner(*fiber.Ctx) error
 	Update(*fiber.Ctx) error
 	GetOwnerOverView(*fiber.Ctx) error
+	AddEmployee(*fiber.Ctx) error
+	AddService(*fiber.Ctx) error
 }
 
 func (h storeHandler) Create(c *fiber.Ctx) error {
@@ -103,4 +105,42 @@ func (h storeHandler) GetOwnerOverView(c *fiber.Ctx) error {
 		"store": store.Puplate(),
 		"apt":   apts,
 	})
+}
+
+// AddEmployee
+func (h storeHandler) AddEmployee(c *fiber.Ctx) error {
+	return c.Status(404).SendString("to be implemented")
+
+}
+func (h storeHandler) AddService(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	role := claims["role"].(string)
+	if role != "admin" && role != "owner" {
+		return c.Status(401).JSON(&fiber.Map{"message": "Unauthorized"})
+	}
+
+	var store models.Store
+	ownerID, _ := primitive.ObjectIDFromHex(claims["id"].(string))
+	store.Owner = ownerID
+	if err := store.FindByOwnerID(); err != nil {
+		return httputils.JSONResponseModelError(c, err)
+	}
+
+	var service models.Service
+	if err := c.BodyParser(service); err != nil {
+		return httputils.JSONParamInvalidResponse(c, err)
+	}
+
+	ID, err := service.Save()
+	if err != nil {
+		return httputils.JSONResponseModelError(c, err)
+	}
+
+	service.ID = *ID
+	if err := store.AddService(service); err != nil {
+		return httputils.JSONResponseModelError(c, err)
+	}
+
+	return httputils.JSONSuccessResponse(c, service)
 }

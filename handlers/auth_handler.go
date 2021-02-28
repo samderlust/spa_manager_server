@@ -37,7 +37,6 @@ func (h authHandler) SignUp(c *fiber.Ctx) error {
 	if err := c.BodyParser(user); err != nil {
 		return httputils.JSONParamInvalidResponse(c, err)
 	}
-	user.Role = "admin"
 
 	if err := user.Validate(); err != nil {
 		return httputils.JSONResponseModelError(c, err)

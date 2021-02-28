@@ -19,6 +19,7 @@ type Store struct {
 	Address   string               `json:"address,omitempty" bson:"address,omitempty"`
 	Phone     int                  `json:"phone,omitempty" bson:"phone,omitempty"`
 	Owner     primitive.ObjectID   `json:"owner,omitempty" bson:"owner,omitempty"`
+	Services  []primitive.ObjectID `json:"services," bson:"services,"`
 	Employees []primitive.ObjectID `json:"employees,omitempty" bson:"employees,omitempty"`
 }
 
@@ -28,6 +29,7 @@ type PopulatedStore struct {
 	Owner        User          `json:"owner,omitempty" bson:"owner,omitempty"`
 	Employees    []User        `json:"employees," bson:"employees,"`
 	Appointments []Appointment `json:"appointments,omitempty" bson:"appointments,omitempty"`
+	Services     []Service     `json:"services," bson:"services,"`
 }
 
 type address struct {
@@ -64,8 +66,20 @@ func (s *Store) Puplate() *PopulatedStore {
 		}
 		eList = append(eList, emp)
 	}
-
 	pStore.Employees = eList
+
+	sList := make([]Service, 0)
+	for _, e := range s.Services {
+		var ser Service
+		ser.ID = e
+		logger.Info("populating service")
+
+		if err := ser.GetById(); err != nil {
+			logger.Info(err.Message)
+		}
+		sList = append(sList, ser)
+	}
+	pStore.Services = sList
 
 	return pStore
 }
@@ -131,7 +145,6 @@ func (s Store) Find(searchTerm string) ([]Store, *resterrors.RestError) {
 // Update store
 func (s *Store) Update() *resterrors.RestError {
 	filter := bson.M{"_id": s.ID}
-
 	updating := bson.M{
 		"$set": bson.M{
 			"name":      s.Name,
@@ -143,6 +156,19 @@ func (s *Store) Update() *resterrors.RestError {
 	}
 	return updateEntity(&s, filter, updating, storeCollection)
 
+}
+
+// AddService into store
+func (s *Store) AddService(service Service) *resterrors.RestError {
+	filter := bson.M{"_id": s.ID}
+
+	updating := bson.M{
+		"$push": bson.M{
+			"services": service.ID,
+		},
+	}
+
+	return updateEntity(&s, filter, updating, storeCollection)
 }
 
 // Validate store
