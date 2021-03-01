@@ -15,11 +15,31 @@ type Technician struct {
 	ID             primitive.ObjectID   `json:"id,omitempty" bson:"_id,omitempty"`
 	Services       []primitive.ObjectID `json:"services,omitempty" bson:"services,omitempty"`
 	Availabilities []primitive.ObjectID `json:"availabilities,omitempty" bson:"availabilities,omitempty"`
+	UserID         primitive.ObjectID   `json:"userId,omitempty" bson:"userId,omitempty"`
+}
+
+type PopulatedTechnician struct {
+	Technician
+	_id primitive.ObjectID `json:"-" bson:"-"`
+	User
 }
 
 var (
 	techCollection = resources.Client.TechnicianCollection()
 )
+
+func (t *Technician) Marshall() (*PopulatedTechnician, *resterrors.RestError) {
+	var user User
+	user.ID = t.UserID
+	if err := user.FindByID(); err != nil {
+		return nil, err
+	}
+	tech := new(PopulatedTechnician)
+	tech.Technician = *t
+	mUser := user.Marshall()
+	tech.User = *mUser
+	return tech, nil
+}
 
 func (t *Technician) GetAll() ([]Technician, *resterrors.RestError) {
 	filter := bson.M{}

@@ -100,11 +100,10 @@ func (h storeHandler) GetOwnerOverView(c *fiber.Ctx) error {
 	if err != nil {
 		return httputils.JSONResponseModelError(c, err)
 	}
+	popStore := store.Puplate()
+	popStore.Appointments = apts
 
-	return httputils.JSONSuccessResponse(c, fiber.Map{
-		"store": store.Puplate(),
-		"apt":   apts,
-	})
+	return httputils.JSONSuccessResponse(c, popStore)
 }
 
 // AddEmployee

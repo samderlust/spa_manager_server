@@ -64,7 +64,7 @@ func (u *User) FindByEmail(email string) *resterrors.RestError {
 func (u User) Validate() *resterrors.RestError {
 	if err := validation.ValidateStruct(
 		&u,
-		validation.Field(&u.Username, validation.Required, validation.NotNil, validation.Length(4, 18)),
+		// validation.Field(&u.Username, validation.Required, validation.NotNil, validation.Length(4, 18)),
 		validation.Field(&u.Email, validation.Required, is.Email),
 		validation.Field(&u.Password, validation.Required, validation.Length(4, 255)),
 		validation.Field(&u.Role, validation.Required, validation.In("admin", "owner", "technician").Error("role must be 'admin', 'owner', or 'technician'")),

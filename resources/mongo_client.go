@@ -14,8 +14,8 @@ import (
 
 //Client export mongo client
 var (
-	Client bookingCoreInterface = &bookingCoreClient{}
-	client *mongo.Client
+	Client    bookingCoreInterface = &bookingCoreClient{}
+	MgoClient *mongo.Client
 )
 
 type bookingCoreInterface interface {
@@ -36,7 +36,7 @@ func init() {
 	defer cancel()
 	var err error
 	uri := os.Getenv("DB_URL")
-	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	MgoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		logger.Info(err.Error())
 		panic(err)
@@ -44,7 +44,7 @@ func init() {
 }
 
 func (b *bookingCoreClient) UserCollection() *mongo.Collection {
-	c := client.Database("booking_core").Collection("users")
+	c := MgoClient.Database("booking_core").Collection("users")
 	index := mongo.IndexModel{
 		Keys:    bson.M{"email": 1},
 		Options: options.Index().SetUnique(true),
@@ -59,7 +59,7 @@ func (b *bookingCoreClient) UserCollection() *mongo.Collection {
 }
 
 func (b *bookingCoreClient) CategoryCollection() *mongo.Collection {
-	c := client.Database("booking_core").Collection("categories")
+	c := MgoClient.Database("booking_core").Collection("categories")
 	index := mongo.IndexModel{
 		Keys:    bson.M{"name": 1},
 		Options: options.Index().SetUnique(true),
@@ -75,33 +75,24 @@ func (b *bookingCoreClient) CategoryCollection() *mongo.Collection {
 
 //TechnicianCollection get technicians collection
 func (b *bookingCoreClient) TechnicianCollection() *mongo.Collection {
-	c := client.Database("booking_core").Collection("technicians")
-	index := mongo.IndexModel{
-		Keys:    bson.M{"email": 1},
-		Options: options.Index().SetUnique(true),
-	}
-	if _, err := c.Indexes().CreateOne(
-		context.Background(),
-		index,
-	); err != nil {
-		log.Fatal("failed create Index")
-	}
+	c := MgoClient.Database("booking_core").Collection("technicians")
+
 	return c
 }
 
 //AvailabilityCollection get availabilities collection
 func (b *bookingCoreClient) AvailabilityCollection() *mongo.Collection {
-	return client.Database("booking_core").Collection("availabilities")
+	return MgoClient.Database("booking_core").Collection("availabilities")
 }
 
 //StoreCollection get availabilities collection
 func (b *bookingCoreClient) StoreCollection() *mongo.Collection {
-	return client.Database("booking_core").Collection("stores")
+	return MgoClient.Database("booking_core").Collection("stores")
 }
 
 //CustomerCollection get customers collection
 func (b *bookingCoreClient) CustomerCollection() *mongo.Collection {
-	c := client.Database("booking_core").Collection("customers")
+	c := MgoClient.Database("booking_core").Collection("customers")
 	index := mongo.IndexModel{
 		Keys:    bson.M{"email": 1},
 		Options: options.Index().SetUnique(true),
@@ -117,10 +108,10 @@ func (b *bookingCoreClient) CustomerCollection() *mongo.Collection {
 
 //AppointmentCollection get appointment collection
 func (b *bookingCoreClient) AppointmentCollection() *mongo.Collection {
-	return client.Database("booking_core").Collection("appointments")
+	return MgoClient.Database("booking_core").Collection("appointments")
 }
 
 // ServiceCollection get services collection
 func (b *bookingCoreClient) ServiceCollection() *mongo.Collection {
-	return client.Database("booking_core").Collection("services")
+	return MgoClient.Database("booking_core").Collection("services")
 }

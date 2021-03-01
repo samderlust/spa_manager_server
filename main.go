@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	print("start main")
 	app := fiber.New()
 	app.Use(cors.New())

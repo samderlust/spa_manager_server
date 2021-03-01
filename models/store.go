@@ -19,16 +19,16 @@ type Store struct {
 	Address   string               `json:"address,omitempty" bson:"address,omitempty"`
 	Phone     int                  `json:"phone,omitempty" bson:"phone,omitempty"`
 	Owner     primitive.ObjectID   `json:"owner,omitempty" bson:"owner,omitempty"`
-	Services  []primitive.ObjectID `json:"services," bson:"services,"`
-	Employees []primitive.ObjectID `json:"employees,omitempty" bson:"employees,omitempty"`
+	Services  []primitive.ObjectID `json:"services," bson:"services"`
+	Employees []primitive.ObjectID `json:"employees" bson:"employees"`
 }
 
 // PopulatedStore is used to populated owner and employees
 type PopulatedStore struct {
 	Store
-	Owner        User          `json:"owner,omitempty" bson:"owner,omitempty"`
-	Employees    []User        `json:"employees," bson:"employees,"`
-	Appointments []Appointment `json:"appointments,omitempty" bson:"appointments,omitempty"`
+	Owner        User          `json:"owner" bson:"owner"`
+	Employees    []Technician  `json:"employees," bson:"employees,"`
+	Appointments []Appointment `json:"appointments" bson:"appointments"`
 	Services     []Service     `json:"services," bson:"services,"`
 }
 
@@ -55,16 +55,16 @@ func (s *Store) Puplate() *PopulatedStore {
 	}
 	pStore.Owner = *owner.Marshall()
 
-	eList := make([]User, 0)
+	eList := make([]Technician, 0)
 	for _, e := range s.Employees {
-		var emp User
-		emp.ID = e
+		var tech Technician
+		tech.ID = e
 
-		if err := emp.FindByID(); err != nil {
+		if err := tech.GetByID(); err != nil {
 			logger.Info(err.Message)
 			// return nil
 		}
-		eList = append(eList, emp)
+		eList = append(eList, tech)
 	}
 	pStore.Employees = eList
 
@@ -72,7 +72,6 @@ func (s *Store) Puplate() *PopulatedStore {
 	for _, e := range s.Services {
 		var ser Service
 		ser.ID = e
-		logger.Info("populating service")
 
 		if err := ser.GetById(); err != nil {
 			logger.Info(err.Message)
@@ -168,6 +167,17 @@ func (s *Store) AddService(service Service) *resterrors.RestError {
 		},
 	}
 
+	return updateEntity(&s, filter, updating, storeCollection)
+}
+
+// AddTechnician into store
+func (s *Store) AddTechnician(tech Technician) *resterrors.RestError {
+	filter := bson.M{"_id": s.ID}
+	updating := bson.M{
+		"$push": bson.M{
+			"employees": tech.ID,
+		},
+	}
 	return updateEntity(&s, filter, updating, storeCollection)
 }
 

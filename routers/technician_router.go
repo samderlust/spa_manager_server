@@ -6,11 +6,11 @@ import (
 )
 
 func TechnicianRouter(api fiber.Router) {
-	techicianGroup := api.Group("/technician")
+	technicianGroup := api.Group("/technician")
 
-	techicianGroup.Get("/", handlers.TechnicianHandler.GetAll)
-	techicianGroup.Get("/:id", handlers.TechnicianHandler.GetOne)
-	techicianGroup.Post("/", handlers.TechnicianHandler.Create)
-	techicianGroup.Delete("/:id", handlers.TechnicianHandler.Delete)
+	technicianGroup.Get("/", handlers.TechnicianHandler.GetAll)
+	technicianGroup.Get("/:id", handlers.TechnicianHandler.GetOne)
+	technicianGroup.Post("/", handlers.TechnicianHandler.Create)
+	technicianGroup.Delete("/:id", handlers.TechnicianHandler.Delete)
 
 }
